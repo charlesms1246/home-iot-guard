@@ -1,199 +1,263 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="sentinel">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home IoT Guardian - Anomaly Detection Dashboard</title>
+    <title>Home IoT Guardian | The Sentinel Network</title>
     
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Custom CSS -->
+    <!-- Custom Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <i class="bi bi-shield-lock"></i> Home IoT Guardian
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#upload-section">Upload</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#results-section">Results</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#history-section">History</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container mt-5">
+    <!-- Neural Grid Background -->
+    <div class="neural-grid"></div>
+    
+    <!-- Main Command Interface -->
+    <div class="command-interface">
         
-        <!-- Status Banner -->
-        <div class="alert alert-info" id="status-banner" role="alert">
-            <div class="d-flex align-items-center">
-                <div class="spinner-border spinner-border-sm me-2" role="status">
-                    <span class="visually-hidden">Loading...</span>
+        <!-- Header / Status Bar -->
+        <header class="sentinel-header">
+            <div class="header-content">
+                <div class="sentinel-identity">
+                    <div class="sentinel-icon pulsing">
+                        <svg viewBox="0 0 40 40" class="icon-sentinel">
+                            <circle cx="20" cy="20" r="18" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="20" cy="20" r="12" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="20" cy="20" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="20" y1="2" x2="20" y2="10" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="20" y1="30" x2="20" y2="38" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="2" y1="20" x2="10" y2="20" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="30" y1="20" x2="38" y2="20" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="identity-text">
+                        <h1 class="system-name">SENTINEL-1</h1>
+                        <span class="system-subtitle">IoT Guardian Network</span>
+                    </div>
                 </div>
-                <div>
-                    <strong>System Status:</strong> <span id="system-status">Checking...</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Upload Section -->
-        <section id="upload-section" class="mb-5">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="bi bi-cloud-upload"></i> Upload IoT Traffic Data</h4>
-                </div>
-                <div class="card-body">
-                    <form id="upload-form">
-                        <div class="mb-3">
-                            <label for="file-input" class="form-label">Select CSV File</label>
-                            <input class="form-control" type="file" id="file-input" accept=".csv" required>
-                            <div class="form-text">
-                                Upload a CSV file with columns: orig_pkts, resp_pkts, orig_bytes, resp_bytes
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-lg" id="scan-btn">
-                            <i class="bi bi-search"></i> Upload & Scan for Anomalies
-                        </button>
-                    </form>
-                    
-                    <!-- Progress Bar -->
-                    <div class="progress mt-3" id="upload-progress" style="display: none;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
-                             role="progressbar" style="width: 100%"></div>
+                
+                <div class="system-status">
+                    <div class="status-indicator active">
+                        <span class="status-pulse"></span>
+                        <span class="status-text">ACTIVE</span>
+                    </div>
+                    <div class="network-integrity">
+                        <span class="integrity-label">Network Integrity</span>
+                        <span class="integrity-value" id="network-integrity">99.97%</span>
                     </div>
                 </div>
             </div>
-        </section>
+        </header>
 
-        <!-- Results Section -->
-        <section id="results-section" class="mb-5" style="display: none;">
-            <div class="card shadow">
-                <div class="card-header bg-success text-white">
-                    <h4 class="mb-0"><i class="bi bi-check-circle"></i> Scan Results</h4>
+        <!-- Main Grid Layout -->
+        <main class="command-grid">
+            
+            <!-- Left Panel: Scan Operations -->
+            <section class="panel scan-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">
+                        <svg viewBox="0 0 24 24" class="icon-scan">
+                            <rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" rx="2"/>
+                            <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+                            <line x1="12" y1="3" x2="12" y2="21" stroke="currentColor" stroke-width="1.5" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <h2 class="panel-title">THREAT ANALYSIS</h2>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h2 class="text-primary" id="total-samples">0</h2>
-                                    <p class="mb-0">Total Samples</p>
-                                </div>
-                            </div>
+
+                <div class="panel-content">
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="upload-zone">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" class="icon-upload">
+                                <path d="M12 2L12 16M12 2L8 6M12 2L16 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                <path d="M4 16L4 20C4 21.1046 4.89543 22 6 22L18 22C19.1046 22 20 21.1046 20 20L20 16" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                            </svg>
                         </div>
-                        <div class="col-md-3">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h2 class="text-danger" id="anomalies-count">0</h2>
-                                    <p class="mb-0">Anomalies Detected</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h2 class="text-warning" id="anomaly-percentage">0%</h2>
-                                    <p class="mb-0">Anomaly Rate</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-center">
-                                <div class="card-body">
-                                    <h2 class="text-info" id="threshold-value">0.00</h2>
-                                    <p class="mb-0">Threshold</p>
-                                </div>
-                            </div>
+                        <p class="upload-instruction">Deploy network traffic data</p>
+                        <p class="upload-hint">CSV format • Maximum 16MB</p>
+                        
+                        <form id="upload-form" enctype="multipart/form-data">
+                            <input type="file" id="file-input" name="file" accept=".csv" hidden>
+                            <button type="button" class="btn-primary" id="select-file-btn">
+                                <span class="btn-text">SELECT FILE</span>
+                                <span class="btn-glow"></span>
+                            </button>
+                            <button type="submit" class="btn-secondary" id="scan-btn" disabled>
+                                <span class="btn-text">INITIATE SCAN</span>
+                                <span class="btn-glow"></span>
+                            </button>
+                        </form>
+                        
+                        <div class="file-info" id="file-info" style="display: none;">
+                            <span class="file-name" id="file-name"></span>
+                            <span class="file-size" id="file-size"></span>
                         </div>
                     </div>
 
-                    <!-- Anomalies Table -->
-                    <h5 class="mt-4">Anomaly Details</h5>
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="results-table">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Sequence ID</th>
-                                    <th>Rows</th>
-                                    <th>Error Score</th>
-                                    <th>Severity</th>
-                                    <th>Sample Data</th>
-                                </tr>
-                            </thead>
-                            <tbody id="results-tbody">
-                                <!-- Results will be inserted here -->
-                            </tbody>
-                        </table>
+                    <!-- Scanning State -->
+                    <div class="scan-progress" id="scan-progress" style="display: none;">
+                        <div class="scan-animation">
+                            <div class="scan-wave"></div>
+                            <div class="scan-wave"></div>
+                            <div class="scan-wave"></div>
+                        </div>
+                        <p class="scan-status">Analyzing threat patterns...</p>
                     </div>
+
+                    <!-- System Metrics -->
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <span class="metric-label">Total Scans</span>
+                            <span class="metric-value" id="total-scans">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Active Threats</span>
+                            <span class="metric-value metric-alert" id="active-threats">0</span>
+                        </div>
+                        <div class="metric-card">
+                            <span class="metric-label">Detection Rate</span>
+                            <span class="metric-value" id="detection-rate">0.00%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Center Panel: Results -->
+            <section class="panel results-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">
+                        <svg viewBox="0 0 24 24" class="icon-results">
+                            <polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3"/>
+                        </svg>
+                    </div>
+                    <h2 class="panel-title">ANOMALY DETECTION</h2>
+                    <div class="panel-action" id="clear-results" style="display: none;">
+                        <button class="btn-ghost">CLEAR</button>
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <!-- Alert Banner -->
+                    <div class="alert-banner" id="alert-banner" style="display: none;">
+                        <div class="alert-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2L2 22h20L12 2z" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                                <line x1="12" y1="10" x2="12" y2="14" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="12" cy="18" r="1" fill="currentColor"/>
+                            </svg>
+                        </div>
+                        <div class="alert-content">
+                            <p class="alert-title" id="alert-title">Anomalies Detected</p>
+                            <p class="alert-message" id="alert-message">Countermeasures active.</p>
+                        </div>
+                    </div>
+
+                    <!-- Results Table -->
+                    <div class="results-container" id="results-container">
+                        <div class="empty-state" id="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+                                    <path d="M12 8v4l3 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <p class="empty-text">Awaiting network traffic data.</p>
+                            <p class="empty-hint">Deploy a CSV file to initiate threat analysis.</p>
+                        </div>
+
+                        <div class="results-summary" id="results-summary" style="display: none;">
+                            <div class="summary-stat">
+                                <span class="summary-label">Samples Analyzed</span>
+                                <span class="summary-value" id="total-samples">0</span>
+                            </div>
+                            <div class="summary-stat stat-alert">
+                                <span class="summary-label">Anomalies Found</span>
+                                <span class="summary-value" id="anomalies-found">0</span>
+                            </div>
+                            <div class="summary-stat">
+                                <span class="summary-label">Threat Percentage</span>
+                                <span class="summary-value" id="threat-percentage">0.00%</span>
+                            </div>
+                            <div class="summary-stat">
+                                <span class="summary-label">Detection Threshold</span>
+                                <span class="summary-value code" id="threshold-value">0.000000</span>
+                            </div>
+                        </div>
+
+                        <div class="results-table-wrapper" id="results-table-wrapper" style="display: none;">
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>SEQ</th>
+                                        <th>ERROR MAGNITUDE</th>
+                                        <th>THRESHOLD</th>
+                                        <th>SEVERITY</th>
+                                        <th>ROWS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body">
+                                    <!-- Results populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: History -->
+            <section class="panel history-panel">
+                <div class="panel-header">
+                    <div class="panel-icon">
+                        <svg viewBox="0 0 24 24" class="icon-history">
+                            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                            <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        </svg>
+                    </div>
+                    <h2 class="panel-title">SCAN ARCHIVE</h2>
+                    <div class="panel-action">
+                        <button class="btn-ghost" id="refresh-history">REFRESH</button>
+                    </div>
+                </div>
+
+                <div class="panel-content">
+                    <div class="history-list" id="history-list">
+                        <div class="history-empty">
+                            <p>No scan history available.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer Status Bar -->
+        <footer class="sentinel-footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <span class="code">SENTINEL-1</span>
+                    <span class="separator">|</span>
+                    <span>Adaptive encryption active</span>
+                    <span class="separator">|</span>
+                    <span class="code" id="system-time">00:00:00</span>
+                </div>
+                <div class="footer-status">
+                    <span class="status-dot active"></span>
+                    <span>All systems synchronized</span>
                 </div>
             </div>
-        </section>
-
-        <!-- History Section -->
-        <section id="history-section" class="mb-5">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="bi bi-clock-history"></i> Scan History</h4>
-                    <button class="btn btn-light btn-sm" id="refresh-history-btn">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="history-table">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Scan ID</th>
-                                    <th>Timestamp</th>
-                                    <th>Anomalies Count</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="history-tbody">
-                                <tr>
-                                    <td colspan="4" class="text-center">
-                                        <div class="spinner-border" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </footer>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white text-center py-3 mt-5">
-        <div class="container">
-            <p class="mb-0">Home IoT Guardian &copy; 2025 | LSTM-based Anomaly Detection System</p>
-        </div>
-    </footer>
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
 
-    <!-- Bootstrap 5 JS Bundle -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
-
