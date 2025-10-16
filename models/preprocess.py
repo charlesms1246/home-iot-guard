@@ -195,12 +195,16 @@ def preprocess_pipeline(file_path, numeric_cols, categorical_cols=None,
 
 if __name__ == "__main__":
     # Test the preprocessing functions
+    import os
     print("="*60)
     print("Testing Preprocessing Functions")
     print("="*60)
     
     # Test with mock_traffic.csv
-    test_file = '../data/mock_traffic.csv'
+    # Get the project root directory (parent of models/)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(current_dir)
+    test_file = os.path.join(project_root, 'data', 'mock_traffic.csv')
     
     print("\n--- Test 1: Basic preprocessing without sequences ---")
     result = preprocess_pipeline(
