@@ -1,0 +1,62 @@
+# Heroku Slug Ignore File
+# Files/folders listed here won't be deployed to Heroku
+# This reduces slug size and deployment time
+
+# Documentation (not needed in production)
+*.md
+!README.md
+docs/
+DEMO_GUIDE.md
+TESTING_SUMMARY.md
+TEST_RESULTS.md
+TRAINING_RESULTS.md
+WEBAPP_GUIDE.md
+DATASET_SETUP.md
+FINAL_PROJECT_SUMMARY.md
+TESTING_COMPLETION.txt
+COMPLETE_PROJECT_GUIDE.md
+HEROKU_DEPLOYMENT_GUIDE.md
+DEPLOYMENT_INSTRUCTIONS.md
+
+# Test files (not needed in production)
+tests.py
+test_*.py
+*_test.py
+
+# Data files (use smaller datasets or download separately)
+# data/
+# Uncomment above if you have large datasets
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter notebooks
+*.ipynb
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Deployment scripts (not needed on Heroku)
+deploy.sh
+deploy.ps1
+
+# Training history images (optional)
+# models/training_history.png
+
