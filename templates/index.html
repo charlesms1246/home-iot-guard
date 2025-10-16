@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home IoT Guardian - Anomaly Detection Dashboard</title>
+    
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dark bg-primary navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-shield-lock"></i> Home IoT Guardian
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#upload-section">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#results-section">Results</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#history-section">History</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        
+        <!-- Status Banner -->
+        <div class="alert alert-info" id="status-banner" role="alert">
+            <div class="d-flex align-items-center">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>
+                    <strong>System Status:</strong> <span id="system-status">Checking...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section -->
+        <section id="upload-section" class="mb-5">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-cloud-upload"></i> Upload IoT Traffic Data</h4>
+                </div>
+                <div class="card-body">
+                    <form id="upload-form">
+                        <div class="mb-3">
+                            <label for="file-input" class="form-label">Select CSV File</label>
+                            <input class="form-control" type="file" id="file-input" accept=".csv" required>
+                            <div class="form-text">
+                                Upload a CSV file with columns: orig_pkts, resp_pkts, orig_bytes, resp_bytes
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg" id="scan-btn">
+                            <i class="bi bi-search"></i> Upload & Scan for Anomalies
+                        </button>
+                    </form>
+                    
+                    <!-- Progress Bar -->
+                    <div class="progress mt-3" id="upload-progress" style="display: none;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results-section" class="mb-5" style="display: none;">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-check-circle"></i> Scan Results</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2 class="text-primary" id="total-samples">0</h2>
+                                    <p class="mb-0">Total Samples</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2 class="text-danger" id="anomalies-count">0</h2>
+                                    <p class="mb-0">Anomalies Detected</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2 class="text-warning" id="anomaly-percentage">0%</h2>
+                                    <p class="mb-0">Anomaly Rate</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h2 class="text-info" id="threshold-value">0.00</h2>
+                                    <p class="mb-0">Threshold</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anomalies Table -->
+                    <h5 class="mt-4">Anomaly Details</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="results-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Sequence ID</th>
+                                    <th>Rows</th>
+                                    <th>Error Score</th>
+                                    <th>Severity</th>
+                                    <th>Sample Data</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-tbody">
+                                <!-- Results will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="history-section" class="mb-5">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-clock-history"></i> Scan History</h4>
+                    <button class="btn btn-light btn-sm" id="refresh-history-btn">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="history-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Scan ID</th>
+                                    <th>Timestamp</th>
+                                    <th>Anomalies Count</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-tbody">
+                                <tr>
+                                    <td colspan="4" class="text-center">
+                                        <div class="spinner-border" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-5">
+        <div class="container">
+            <p class="mb-0">Home IoT Guardian &copy; 2025 | LSTM-based Anomaly Detection System</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
+
